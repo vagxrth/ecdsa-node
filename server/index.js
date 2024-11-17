@@ -32,7 +32,9 @@ app.post("/send", (req, res) => {
 
   const hashMessage = (message) => keccak256(Uint8Array.from(message));
 
-  const isValid = secp.secp256k1.verify(sig, hashMessage(msg), sender) === true;
+  const recoveredAddress = secp.secp256k1.recover(hashMessage(msg), sig, sigStringed.recovery);
+
+  const isValid = recoveredAddress === sender;
   
   if(!isValid) res.status(400).send({ message: "Bad signature!"});
 
